@@ -31,3 +31,24 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
+
+// GET all testimonials
+export async function GET() {
+  try {
+    const testimonials = await prisma.testimonial.findMany({
+      orderBy: {
+        id: "desc",
+      },
+    });
+
+    return NextResponse.json(testimonials);
+  } catch (error) {
+    console.error("Failed to fetch testimonials:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch testimonials." },
+      { status: 500 }
+    );
+  }
+}

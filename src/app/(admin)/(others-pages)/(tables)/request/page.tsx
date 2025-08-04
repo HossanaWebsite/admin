@@ -1,13 +1,14 @@
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import DynamicTable from "@/components/tables/DynamicTable";
+
 interface ColumnConfig<T> {
   key: keyof T;
   header: string;
   render?: (value: any, row: T) => React.ReactNode;
 }
-
-import DynamicTable from "@/components/tables/DynamicTable";
 
 interface Request {
   fullname: string;
@@ -21,35 +22,6 @@ interface Request {
   reason: string;
   notes?: string;
 }
-
-
-const requestData: Request[] = [
-  {
-    fullname: "John Doe",
-    email: "john@example.com",
-    phone: "+251911223344",
-    address: "123 Main Street",
-    apartment: "Apt 4B",
-    city: "Addis Ababa",
-    state: "Addis",
-    zip: "1000",
-    reason: "Service inquiry",
-    notes: "Please call after 5pm.",
-  },
-  {
-    fullname: "Sarah Smith",
-    email: "sarah@example.com",
-    phone: "+251922334455",
-    address: "456 Pine Ave",
-    apartment: "",
-    city: "Bahir Dar",
-    state: "Amhara",
-    zip: "6000",
-    reason: "Support",
-    notes: "",
-  },
-];
-
 
 const requestColumns: ColumnConfig<Request>[] = [
   { key: "fullname", header: "Full Name" },
@@ -69,12 +41,29 @@ const requestColumns: ColumnConfig<Request>[] = [
   },
 ];
 
+export default function RequestTablePage() {
+  const [requestData, setRequestData] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function TestimonialTablePage() {
+  useEffect(() => {
+    fetch("/api/request")
+      .then((res) => res.json())
+      .then((data) => setRequestData(data))
+      .catch((err) => console.error("Failed to fetch requests", err))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
-       <div>
-            <PageBreadcrumb pageTitle="Request" />
-            <DynamicTable columns={requestColumns} data={requestData} />
-       </div>
+    <div>
+      <PageBreadcrumb pageTitle="Request" />
+
+      {loading ? (
+        <div className="text-center text-gray-500 mt-10">Loading...</div>
+      ) : requestData.length === 0 ? (
+        <div className="text-center text-gray-500 mt-10">No request data found.</div>
+      ) : (
+        <DynamicTable columns={requestColumns} data={requestData} />
+      )}
+    </div>
   );
 }

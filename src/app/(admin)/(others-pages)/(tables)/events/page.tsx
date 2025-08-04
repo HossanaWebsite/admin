@@ -1,63 +1,28 @@
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-// import Image from "next/image";
+import DynamicTable from "@/components/tables/DynamicTable";
+
 interface ColumnConfig<T> {
   key: keyof T;
   header: string;
   render?: (value: any, row: T) => React.ReactNode;
 }
 
-import DynamicTable from "@/components/tables/DynamicTable";
-
 interface Event {
   title: string;
   summary: string;
   url: string;
-  // image: string;
   address: string;
   organizer: {
     phone: string;
     email: string;
   };
   isActive: boolean;
-  day: string; // ISO date or string like 'Monday'
+  day: string;
   location: string;
 }
-
-
-const eventData: Event[] = [
-  {
-    title: "Tech Meetup 2025",
-    summary: "Networking event for developers",
-    url: "https://eventsite.com/tech-meetup",
-    // image: "/images/event/event-1.jpg",
-    address: "123 Event St, Addis Ababa",
-    organizer: {
-      phone: "+251911000111",
-      email: "organizer@example.com",
-    },
-    isActive: true,
-    day: "Monday",
-    location: "Hilton Hotel",
-  },
-  {
-    title: "Startup Demo Day",
-    summary: "Pitch your startup to investors",
-    url: "https://eventsite.com/demo-day",
-    // image: "/images/event/event-2.jpg",
-    address: "456 Startup Lane, Bahir Dar",
-    organizer: {
-      phone: "+251922000222",
-      email: "demo@startupevent.org",
-    },
-    isActive: false,
-    day: "Friday",
-    location: "Lakeside Center",
-  },
-];
-
-
 
 const eventColumns: ColumnConfig<Event>[] = [
   { key: "title", header: "Title" },
@@ -66,18 +31,11 @@ const eventColumns: ColumnConfig<Event>[] = [
     key: "url",
     header: "URL",
     render: (url: string) => (
-      <a href={url} className="text-blue-600 underline" target="_blank">
+      <a href={url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
         {url}
       </a>
     ),
   },
-  // {
-  //   key: "image",
-  //   header: "Image",
-  //   render: (src: string) => (
-  //     <Image src={src} width={60} height={40} alt="Event" className="rounded" />
-  //   ),
-  // },
   { key: "address", header: "Address" },
   {
     key: "organizer",
@@ -103,13 +61,28 @@ const eventColumns: ColumnConfig<Event>[] = [
   { key: "location", header: "Location" },
 ];
 
+export default function EventTablePage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    fetch("/api/event")
+      .then((res) => res.json())
+      .then((data) => setEvents(data))
+      .catch((err) => console.error("Failed to fetch events", err)).finally(()=>setLoading(false));
+  }, []);
 
-export default function TestimonialTablePage() {
   return (
-       <div>
-            <PageBreadcrumb pageTitle="Events" />
-            <DynamicTable columns={eventColumns} data={eventData} />;
-       </div>
-  );
+  <div>
+    <PageBreadcrumb pageTitle="Events" />
+
+    {loading ? (
+      <p className="text-gray-500 italic">Loading...</p>
+    ) : events.length === 0 ? (
+      <p className="text-gray-400 italic mt-4">No events found.</p>
+    ) : (
+      <DynamicTable columns={eventColumns} data={events} />
+    )}
+  </div>
+);
 }

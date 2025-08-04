@@ -1,37 +1,83 @@
-// app/api/events/route.ts (if using App Router)
-import { NextResponse } from "next/server";
+
+import { NextResponse,NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const data = await req.json();
 
-    const event = await prisma.event.create({
+    // Validate required fields
+    if (
+      !data.uniqueId ||
+      !data.slug ||
+      !data.title ||
+      !data.summary ||
+      !data.url ||
+      !data.image ||
+      !data.picPath ||
+      !data.day ||
+      !data.eventName ||
+      !data.location ||
+      !data.start ||
+      !data.end ||
+      !data.date ||
+      !data.organizer
+    ) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Check for duplicate uniqueId
+    const existingEvent = await prisma.event.findUnique({
+      where: { uniqueId: data.uniqueId },
+    });
+
+    if (existingEvent) {
+      return NextResponse.json(
+        { error: "Event with this uniqueId already exists." },
+        { status: 409 }
+      );
+    }
+
+    const createdEvent = await prisma.event.create({
       data: {
-        uniqueId: body.slug,
-        slug: body.slug,
-        title: body.title,
-        eventName: body.title,
-        summary: body.summary,
-        url: body.url,
-        image: body.image,
-        picPath: body.image,
-        day: body.day, // like 'Feb 15'
-        date: new Date(body.date), // e.g. '2025-02-15T13:00:00'
-        start: new Date(body.start), // e.g. '2025-02-15T13:00:00'
-        end: new Date(body.end),     // e.g. '2025-02-15T16:00:00'
-        location: body.location,
-        organizer: body.organizer, // must be object { phone, email }
-        paragraphs: body.paragraphs, // must be array of strings
-        isActive: body.isActive ?? true,
+        uniqueId: data.uniqueId,
+        slug: data.slug,
+        title: data.title,
+        summary: data.summary,
+        url: data.url,
+        image: data.image,
+        picPath: data.picPath,
+        day: data.day,
+        eventName: data.eventName,
+        location: data.location,
+        start: new Date(data.start),
+        end: new Date(data.end),
+        date: new Date(data.date),
+        paragraphs: data.paragraphs || [],
+        organizer: data.organizer,
       },
     });
 
-    return NextResponse.json({ success: true, event });
+    return NextResponse.json({ success: true, event: createdEvent });
   } catch (error) {
-    console.error("Error creating event:", error);
-    return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
+    console.error("POST /api/event error:", error);
+    return NextResponse.json({ error: "Failed to create event" }, { status: 500 });
+  }
+}
+
+
+
+export async function GET() {
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: { id: "desc" },
+    });
+
+    return NextResponse.json(events);
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+    return NextResponse.json({ message: "Failed to fetch events." }, { status: 500 });
   }
 }

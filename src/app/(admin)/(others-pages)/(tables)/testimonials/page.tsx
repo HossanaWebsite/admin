@@ -1,46 +1,36 @@
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import DynamicTable from "@/components/tables/DynamicTable";
+import Image from "next/image";
+
 interface ColumnConfig<T> {
   key: keyof T;
   header: string;
   render?: (value: any, row: T) => React.ReactNode;
 }
 
-import DynamicTable from "@/components/tables/DynamicTable";
-import Image from "next/image";
-
 interface Testimonial {
   name: string;
   position: string;
   testimony: string;
-  picture: string;
+  pic: string;        // updated to match your model
   isActive: boolean;
 }
 
-const testimonialData: Testimonial[] = [
-  {
-    name: "Lindsey",
-    position: "CEO",
-    testimony: "Great service!",
-    picture: "/images/user/user-21.jpg",
-    isActive: true,
-  },
-  {
-    name: "Michael",
-    position: "Designer",
-    testimony: "Very helpful.",
-    picture: "/images/user/user-22.jpg",
-    isActive: false,
-  },
-];
-
 const testimonialColumns: ColumnConfig<Testimonial>[] = [
   {
-    key: "picture",
+    key: "pic",
     header: "Picture",
     render: (src) => (
-      <Image src={src} width={40} height={40} alt="User" className="rounded-full" />
+      <Image
+        src={src || "/images/user/user-21.jpg"}
+        width={40}
+        height={40}
+        alt="User"
+        className="rounded-full"
+      />
     ),
   },
   { key: "name", header: "Name" },
@@ -58,12 +48,36 @@ const testimonialColumns: ColumnConfig<Testimonial>[] = [
   },
 ];
 
-
 export default function TestimonialTablePage() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch("/api/testimony");
+        const data = await res.json();
+        setTestimonials(data);
+      } catch (error) {
+        console.error("Failed to fetch testimonials", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   return (
-       <div>
-            <PageBreadcrumb pageTitle="Testimomials" />
-            <DynamicTable columns={testimonialColumns} data={testimonialData} />
-       </div>
+    <div>
+      <PageBreadcrumb pageTitle="Testimonials" />
+      {loading ? (
+        <p>Loading...</p>
+      )  : testimonials.length === 0 ? (
+      <p className="text-gray-400 italic mt-4">No Testimonial found.</p>
+    ) :  (
+        <DynamicTable columns={testimonialColumns} data={testimonials} />
+      )}
+    </div>
   );
 }
