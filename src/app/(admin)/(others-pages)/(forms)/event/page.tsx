@@ -13,7 +13,7 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Form Elements | TailAdmin - Next.js Dashboard Template",
+  title: "Event Form ",
   description:
     "This is Next.js Form Elements page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
 };
@@ -21,20 +21,20 @@ export const metadata: Metadata = {
 export default function FormElements() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="From Elements" />
+      <PageBreadcrumb pageTitle="Event Form" />
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="space-y-6">
-          <DefaultInputs title="Form Details" labelTitle=""/>
-          <SelectInputs />
-          <TextAreaInput title="Testimonial"/>
-          <InputStates />
+          <DefaultInputs title="Event Details" labelTitle="Title" fields={['location', 'date', 'time']} />
+          {/* <SelectInputs /> */}
+          <TextAreaInput title="Detail about event" event={true}/>
+          {/* <InputStates /> */}
         </div>
         <div className="space-y-6">
-          <InputGroup title="form elements"/>
-          <FileInputExample title="upload your image"/>
-          <CheckboxComponents />
-          <RadioButtons />
-          <ToggleSwitch />
+          <InputGroup title="Organizer" />
+          <FileInputExample title="upload image"/>
+          {/* <CheckboxComponents /> */}
+          {/* <RadioButtons /> */}
+          {/* <ToggleSwitch /> */}
           <DropzoneComponent />
         </div>
       </div>

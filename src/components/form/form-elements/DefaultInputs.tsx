@@ -7,28 +7,65 @@ import Select from '../Select';
 import { ChevronDownIcon, EyeCloseIcon, EyeIcon, TimeIcon } from '../../../icons';
 import DatePicker from '@/components/form/date-picker';
 
-export default function DefaultInputs() {
-  const [showPassword, setShowPassword] = useState(false);
+interface DefaultInputsProps {
+  title: string;
+  labelTitle: string;
+  fields?: Array<'location' | 'date' | 'time' |'position'>;
+}
+
+export default function DefaultInputs({ title,labelTitle,fields }: DefaultInputsProps) {
+   const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  
+    const handleSelectChange = (value: string) => {
+      console.log("Selected value:", value);
+    };
+
   const options = [
-    { value: "marketing", label: "Marketing" },
-    { value: "template", label: "Template" },
-    { value: "development", label: "Development" },
+    { value: "member", label: "Member" },
+    { value: "vice president", label: "Vice President" },
+    { value: "president", label: "President" },
+    { value: "coordinator", label: "Coordinator" },
+    { value: "guest", label: "Guest" },
   ];
-  const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value);
-  };
+ 
   return (
-    <ComponentCard title="Default Inputs">
+    <ComponentCard title={title}>
       <div className="space-y-6">
         <div>
-          <Label>Input</Label>
+          <Label>{labelTitle ? labelTitle :'Input'}</Label>
           <Input type="text" />
         </div>
-        <div>
+        {
+          fields?.includes('position') && (
+              <div>
+                  <Label>Position</Label>
+                  <div className="relative">
+                    <Select
+                      options={options}
+                      placeholder="Select Option"
+                      onChange={handleSelectChange}
+                      className="dark:bg-dark-900"
+                    />
+                    <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                        <ChevronDownIcon/>
+                      </span>
+                  </div>
+              </div>
+          )
+        }
+        {
+          fields?.includes('location') && (
+             <div>
+               <Label>Location</Label>
+               <Input type="text" />
+             </div>
+          )
+        }
+        {/* <div>
           <Label>Input with Placeholder</Label>
           <Input type="text" placeholder="info@gmail.com" />
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <Label>Select Input</Label>
           <div className="relative">
             <Select
@@ -41,8 +78,8 @@ export default function DefaultInputs() {
               <ChevronDownIcon/>
             </span>
           </div>
-        </div>
-        <div>
+        </div> */}
+        {/* <div>
           <Label>Password Input</Label>
           <div className="relative">
             <Input
@@ -60,35 +97,45 @@ export default function DefaultInputs() {
               )}
             </button>
           </div>
-        </div>
+        </div> */}
 
-        <div>
-          <DatePicker
-            id="date-picker"
-            label="Date Picker Input"
-            placeholder="Select a date"
-            onChange={(dates, currentDateString) => {
-              // Handle your logic
-              console.log({ dates, currentDateString });
-            }}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="tm">Time Picker Input</Label>
-          <div className="relative">
-            <Input
-              type="time"
-              id="tm"
-              name="tm"
-              onChange={(e) => console.log(e.target.value)}
-            />
-            <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-              <TimeIcon />
-            </span>
+       {
+        fields?.includes('date') && 
+         (
+            <div>
+              <DatePicker
+                id="date-picker"
+                label="Date"
+                placeholder="Select a date"
+                onChange={(dates, currentDateString) => {
+                  // Handle your logic
+                  console.log({ dates, currentDateString });
+                }}
+              />
           </div>
-        </div>
-        <div>
+         )
+       }
+
+       {
+        fields?.includes('time') && 
+        (
+           <div>
+              <Label htmlFor="tm">Time</Label>
+              <div className="relative">
+                <Input
+                  type="time"
+                  id="tm"
+                  name="tm"
+                  onChange={(e) => console.log(e.target.value)}
+                />
+                <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+                  <TimeIcon />
+                </span>
+             </div>
+          </div>
+        )
+       }
+        {/* <div>
           <Label htmlFor="tm">Input with Payment</Label>
           <div className="relative">
             <Input
@@ -113,7 +160,7 @@ export default function DefaultInputs() {
               </svg>
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
     </ComponentCard>
   );

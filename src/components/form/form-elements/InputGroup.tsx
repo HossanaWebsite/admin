@@ -6,7 +6,11 @@ import Input from "../input/InputField";
 import { EnvelopeIcon } from "../../../icons";
 import PhoneInput from "../group-input/PhoneInput";
 
-export default function InputGroup() {
+interface InputGroupProps {
+  title: string;
+}
+
+export default function InputGroup({ title }: InputGroupProps){
   const countries = [
     { code: "US", label: "+1" },
     { code: "GB", label: "+44" },
@@ -17,7 +21,7 @@ export default function InputGroup() {
     console.log("Updated phone number:", phoneNumber);
   };
   return (
-    <ComponentCard title="Input Group">
+    <ComponentCard title={title}>
       <div className="space-y-6">
         <div>
           <Label>Email</Label>
@@ -41,7 +45,7 @@ export default function InputGroup() {
             onChange={handlePhoneNumberChange}
           />
         </div>{" "}
-        <div>
+        {/* <div>
           <Label>Phone</Label>
           <PhoneInput
             selectPosition="end"
@@ -49,7 +53,7 @@ export default function InputGroup() {
             placeholder="+1 (555) 000-0000"
             onChange={handlePhoneNumberChange}
           />
-        </div>
+        </div> */}
       </div>
     </ComponentCard>
   );
