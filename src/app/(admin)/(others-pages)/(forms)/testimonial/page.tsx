@@ -37,9 +37,9 @@ export default function FormElements() {
   });
 
   const options = [
-    { value: "marketing", label: "Marketing" },
-    { value: "template", label: "Template" },
-    { value: "development", label: "Development" },
+    { value: "memeber", label: "Memeber" },
+    { value: "president", label: "President" },
+    { value: "guest", label: "Guest" },
   ];
 
 const onSubmit = async (data: TestimonyFormType) => {
