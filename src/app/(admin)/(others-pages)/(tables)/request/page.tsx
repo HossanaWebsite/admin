@@ -18,7 +18,7 @@ interface Request {
   apartment?: string;
   city: string;
   state: string;
-  zip: string;
+  zipCode: string;
   reason: string;
   notes?: string;
 }
@@ -31,7 +31,7 @@ const requestColumns: ColumnConfig<Request>[] = [
   { key: "apartment", header: "Apartment" },
   { key: "city", header: "City" },
   { key: "state", header: "State" },
-  { key: "zip", header: "Zip Code" },
+  { key: "zipCode", header: "Zip Code" },
   { key: "reason", header: "Reason" },
   {
     key: "notes",
