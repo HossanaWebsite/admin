@@ -9,12 +9,14 @@ import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState } from "react";
 import { signUpSchema } from "@/schemas/signupSchema";
+import { useRouter } from "next/navigation"; // ✅ Added
 
 type SignUpSchema = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const router = useRouter(); // ✅ Added
 
   const {
     register,
@@ -34,7 +36,6 @@ export default function SignUpForm() {
 
   const onSubmitRaw = async () => {
     const values = getValues();
-    console.log(values,"ohh")
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -42,7 +43,11 @@ export default function SignUpForm() {
         body: JSON.stringify(values),
       });
       const result = await res.json();
-      console.log(result);
+      if (res.ok) {
+        router.push("/signin"); // ✅ Redirect to sign-in on success
+      } else {
+        console.error("Signup error:", result?.error || "Unknown error");
+      }
     } catch (err) {
       console.error("Sign up failed", err);
     }

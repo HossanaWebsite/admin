@@ -1,13 +1,20 @@
 // app/api/auth/signup/route.ts
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const { email, password, fullName, phone } = await req.json();
 
+  // Validate email and password length
+  if (!email || !password || password.length < 6) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  }
+
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) return NextResponse.json({ error: 'Email exists' }, { status: 400 });
+  if (existing) {
+    return NextResponse.json({ error: "Email exists" }, { status: 400 });
+  }
 
   const hashed = await bcrypt.hash(password, 10);
 
@@ -16,10 +23,11 @@ export async function POST(req: Request) {
       email,
       password: hashed,
       fullName,
-      // phone,
-      role: 'USER',
+      phone, // you can make phone optional or required in Prisma schema
+      role: "USER",
     },
   });
 
-  return NextResponse.json({ success: true ,user});
+  // Return success without sensitive info
+  return NextResponse.json({ success: true });
 }
