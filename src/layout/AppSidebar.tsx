@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
-
 import {
   BoxCubeIcon,
   CalenderIcon,
@@ -17,8 +16,6 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
-  ShootingStarIcon 
- 
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 
@@ -40,16 +37,11 @@ const navItems: NavItem[] = [
     name: "Calendar",
     path: "/calendar",
   },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "Donations",
-    path: "/donation",
-  },
+  // {
+  //   icon: <UserCircleIcon />,
+  //   name: "User Profile",
+  //   path: "/profile",
+  // },
 
   {
     name: "Forms",
