@@ -1,5 +1,5 @@
 export interface Donation {
-  id: string
+  id: number
   donorName: string
   amount: number
   paymentMethod: "Cash" | "Zelle" | "Venmo" | "Check" | "Credit Card" | "Bank Transfer"

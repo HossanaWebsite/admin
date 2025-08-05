@@ -1,9 +1,9 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import type { DonationFormData, Donation } from "../../lib/donation"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 
 interface DonationFormProps {
   onSubmit: (donation: Omit<Donation, "id" | "createdAt">) => void
@@ -12,11 +12,12 @@ interface DonationFormProps {
 }
 
 export function DonationForm({ onSubmit, onCancel, isModal = false }: DonationFormProps) {
-  const [formData, setFormData] = useState<DonationFormData>({
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
+  const [formData, setFormData] = useState<Omit<DonationFormData, "dateOfDonation">>({
     donorName: "",
     amount: "",
     paymentMethod: "Cash",
-    dateOfDonation: new Date().toISOString().split("T")[0],
     notes: "",
   })
 
@@ -42,7 +43,7 @@ export function DonationForm({ onSubmit, onCancel, isModal = false }: DonationFo
       newErrors.amount = "Please enter a valid amount"
     }
 
-    if (!formData.dateOfDonation) {
+    if (!selectedDate) {
       newErrors.dateOfDonation = "Date is required"
     }
 
@@ -50,30 +51,36 @@ export function DonationForm({ onSubmit, onCancel, isModal = false }: DonationFo
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!validateForm()) return
 
-    onSubmit({
-      donorName: formData.donorName.trim(),
-      amount: Number.parseFloat(formData.amount),
-      paymentMethod: formData.paymentMethod,
-      dateOfDonation: formData.dateOfDonation,
-      notes: formData.notes.trim() || undefined,
-    })
+    const dateOfDonation = selectedDate.toISOString().split("T")[0]
 
-    // Reset form
+    const donationToSubmit = {
+      donorName: formData.donorName.trim(),
+      amount: parseFloat(formData.amount),
+      paymentMethod: formData.paymentMethod,
+      dateOfDonation,
+      notes: formData.notes.trim() || undefined,
+    }
+
+    // call the parent onSubmit callback
+    onSubmit(donationToSubmit)
+
+    // reset form
     setFormData({
       donorName: "",
       amount: "",
       paymentMethod: "Cash",
-      dateOfDonation: new Date().toISOString().split("T")[0],
       notes: "",
     })
+    setSelectedDate(new Date())
+    setErrors({})
   }
 
-  const handleInputChange = (field: keyof DonationFormData, value: string) => {
+  const handleInputChange = (field: keyof Omit<DonationFormData, "dateOfDonation">, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
@@ -151,14 +158,18 @@ export function DonationForm({ onSubmit, onCancel, isModal = false }: DonationFo
             <label className="mb-2.5 block text-black dark:text-white">
               Date of Donation <span className="text-meta-1">*</span>
             </label>
-            <input
-              type="date"
-              value={formData.dateOfDonation}
-              onChange={(e) => handleInputChange("dateOfDonation", e.target.value)}
-              className={`w-full rounded border-[1.5px] bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
-                errors.dateOfDonation ? "border-meta-1" : "border-stroke"
+            <div
+              className={`rounded border-[1.5px] border-stroke bg-white dark:bg-form-input ${
+                errors.dateOfDonation ? "border-meta-1" : ""
               }`}
-            />
+            >
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date | null) => setSelectedDate(date || new Date())}
+                dateFormat="yyyy-MM-dd"
+                className="w-full px-5 py-3 outline-none text-black dark:text-white bg-transparent"
+              />
+            </div>
             {errors.dateOfDonation && <p className="mt-1 text-sm text-meta-1">{errors.dateOfDonation}</p>}
           </div>
         </div>

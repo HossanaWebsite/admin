@@ -4,7 +4,7 @@ import type { Donation } from "../../lib/donation"
 
 interface DonationsTableProps {
   donations: Donation[]
-  onDelete?: (id: string) => void
+  onDelete?: (id: number) => void // optional now
 }
 
 export function DonationsTable({ donations, onDelete }: DonationsTableProps) {
@@ -33,7 +33,11 @@ export function DonationsTable({ donations, onDelete }: DonationsTableProps) {
       "Bank Transfer": "bg-meta-6 text-white",
     }
 
-    return <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${colors[method]}`}>{method}</span>
+    return (
+      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${colors[method]}`}>
+        {method}
+      </span>
+    )
   }
 
   if (donations.length === 0) {
@@ -52,19 +56,27 @@ export function DonationsTable({ donations, onDelete }: DonationsTableProps) {
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="px-4 py-6 md:px-6 xl:px-7.5">
-        <h4 className="text-xl font-semibold text-black dark:text-white">Recent Donations ({donations.length})</h4>
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Recent Donations ({donations.length})
+        </h4>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-2 text-left dark:bg-meta-4">
-              <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white xl:pl-11">Donor Name</th>
+              <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white xl:pl-11">
+                Donor Name
+              </th>
               <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">Amount</th>
-              <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">Payment Method</th>
+              <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
+                Payment Method
+              </th>
               <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">Date</th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">Notes</th>
-              {onDelete && <th className="px-4 py-4 font-medium text-black dark:text-white">Actions</th>}
+              {typeof onDelete === "function" && (
+                <th className="px-4 py-4 font-medium text-black dark:text-white">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -74,7 +86,9 @@ export function DonationsTable({ donations, onDelete }: DonationsTableProps) {
                   <h5 className="font-medium text-black dark:text-white">{donation.donorName}</h5>
                 </td>
                 <td className="px-4 py-5">
-                  <p className="font-semibold text-black dark:text-white">{formatCurrency(donation.amount)}</p>
+                  <p className="font-semibold text-black dark:text-white">
+                    {formatCurrency(donation.amount)}
+                  </p>
                 </td>
                 <td className="px-4 py-5">{getPaymentMethodBadge(donation.paymentMethod)}</td>
                 <td className="px-4 py-5">
@@ -83,10 +97,14 @@ export function DonationsTable({ donations, onDelete }: DonationsTableProps) {
                 <td className="px-4 py-5">
                   <p className="text-sm text-black dark:text-white">{donation.notes || "-"}</p>
                 </td>
-                {onDelete && (
+                {typeof onDelete === "function" && (
                   <td className="px-4 py-5">
                     <button
-                      onClick={() => onDelete(donation.id)}
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this donation?")) {
+                          onDelete(Number(donation.id))
+                        }
+                      }}
                       className="hover:text-primary"
                       title="Delete donation"
                     >
