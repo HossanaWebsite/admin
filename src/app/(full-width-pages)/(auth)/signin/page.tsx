@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "AHCSEMN Sign In",
-  description: "This is Next.js Signin Page TailAdmin Dashboard Template",
+  description: "This is AHCSEMN Signin Page  ",
 };
 
 export default function SignIn() {

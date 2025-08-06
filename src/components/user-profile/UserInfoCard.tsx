@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React , { useState, useEffect }from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
@@ -8,11 +8,19 @@ import Label from "../form/Label";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
+   const [user,setUser] = useState({ fullName:'',email:'',phone:'',position:'' })
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
     closeModal();
   };
+   useEffect(()=>{
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => setUser(data))
+      .catch((err) => console.error("Failed to fetch events", err));
+  },[])
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -27,7 +35,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {user.fullName?.split(' ')[0]}
               </p>
             </div>
 
@@ -36,7 +44,7 @@ export default function UserInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {user?.fullName?.split(' ')[1]}
               </p>
             </div>
 
@@ -45,7 +53,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+               {user?.email}
               </p>
             </div>
 
@@ -54,7 +62,7 @@ export default function UserInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {user?.phone}
               </p>
             </div>
 
@@ -63,7 +71,7 @@ export default function UserInfoCard() {
                 Bio
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {user?.position}
               </p>
             </div>
           </div>

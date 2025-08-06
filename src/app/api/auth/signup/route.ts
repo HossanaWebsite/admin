@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const { email, password, fullName, phone } = await req.json();
 
   // Validate email and password length
-  if (!email || !password || password.length < 6) {
+  if (!email || !password || password.length < 4) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 

@@ -36,7 +36,7 @@ const eventColumns: ColumnConfig<Event>[] = [
       </a>
     ),
   },
-  { key: "address", header: "Address" },
+  // { key: "location", header: "Address" },
   {
     key: "organizer",
     header: "Organizer",

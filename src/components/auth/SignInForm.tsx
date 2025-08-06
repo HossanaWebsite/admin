@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(4, "Password must be at least 6 characters"),
   keepLoggedIn: z.boolean().optional(),
 });
 
@@ -38,7 +38,8 @@ export default function SignInForm() {
 
   const onSubmit = async (data: SignInFormData) => {
     setApiError(null);
-
+    
+    console.log("data redirected")
     try {
       const res = await fetch("/api/auth/signin", {
         method: "POST",
@@ -46,13 +47,17 @@ export default function SignInForm() {
         body: JSON.stringify(data),
       });
 
+      console.log("sign in api respone", res)
+
       if (!res.ok) {
         const errorData = await res.json();
-        setApiError(errorData.error || "Sign in failed");
+        setApiError(errorData.message || errorData.error || "Sign in failed");
         return;
       }
 
       // ✅ Redirect after successful login
+
+      console.log("response rediret to /")
       router.push("/");
     } catch (err) {
       console.error(err);
